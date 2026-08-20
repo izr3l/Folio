@@ -1,0 +1,267 @@
+.editing-view {
+    height: calc(100vh - 58px);
+    display: grid;
+    grid-template-columns: minmax(260px, 1fr) 28px minmax(260px, 1fr);
+    overflow: hidden;
+}
+
+.manuscript-panel,
+.proof-panel {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-heading {
+    height: 43px;
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    color: var(--accent);
+    font: 11px var(--ui);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.panel-note {
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: .08em;
+}
+
+.toolbar {
+    min-height: 39px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 14px;
+    border-bottom: 1px solid var(--rule);
+}
+
+.toolbar button {
+    min-width: 31px;
+    height: 27px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-size: 11px;
+    letter-spacing: .04em;
+}
+
+.toolbar button:hover {
+    border-color: var(--brass);
+    box-shadow: inset 1px 1px 0 var(--shadow);
+}
+
+.editor-host,
+.proof-content {
+    overflow: auto;
+    flex: 1;
+    min-height: 0;
+}
+
+.editor-host {
+    font: calc(14px * var(--type-scale))/1.65 var(--mono);
+}
+
+.cm-editor {
+    height: 100%;
+}
+
+.cm-scroller {
+    overflow: auto;
+    padding: 22px 20px;
+}
+
+/* CodeMirror's base theme hard-codes a black caret (.ͼN .cm-content), which is
+   invisible on the night background. Match its two-class specificity to win. */
+.cm-editor .cm-content {
+    caret-color: var(--accent);
+}
+
+.cm-editor .cm-cursor,
+.cm-editor .cm-dropCursor {
+    border-left: 2px solid var(--accent);
+}
+
+.cm-gutters {
+    background: var(--paper);
+    border: 0;
+    color: var(--muted);
+}
+
+.proof-content {
+    padding: 42px 28px 90px;
+    font-size: calc(17px * var(--type-scale));
+    line-height: 1.58;
+}
+
+.proof-content h1 {
+    font-size: calc(43px * var(--type-scale));
+}
+
+.selection-popover {
+    position: fixed;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-width: min(430px, calc(100vw - 24px));
+    padding: 9px;
+    border: 1px solid var(--brass);
+    background: var(--paper);
+    box-shadow: 4px 4px 0 var(--shadow);
+}
+
+.selection-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.selection-group+.selection-group {
+    border-top: 1px solid var(--rule);
+    padding-top: 7px;
+}
+
+.selection-group>span {
+    margin-right: 5px;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.selection-group button {
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 4px 6px;
+    font-size: 11px;
+}
+
+.selection-group button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.gauge-rail {
+    position: relative;
+    width: 28px;
+    border-left: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    background: transparent;
+    cursor: col-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.gauge-rail::before {
+    content: "";
+    height: 72px;
+    width: 2px;
+    border-left: 1px solid var(--brass);
+    border-right: 1px solid var(--brass);
+    opacity: .8;
+}
+
+.gauge-rail::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 34px;
+    transform: translate(-50%, -50%);
+    background: repeating-linear-gradient(to bottom, var(--brass) 0 1px, transparent 1px 6px);
+    opacity: .7;
+}
+
+.gauge-ticks {
+    position: absolute;
+    inset: 16% 0;
+}
+
+.gauge-ticks i {
+    position: absolute;
+    left: 5px;
+    width: 6px;
+    border-top: 1px solid var(--brass);
+    opacity: .55;
+}
+
+.gauge-stats {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-90deg);
+    transform-origin: center;
+    display: flex;
+    gap: 9px;
+    white-space: nowrap;
+    color: var(--muted);
+    font: 8px var(--mono);
+}
+
+@media (max-width: 760px) {
+    .topbar {
+        padding: 0 15px;
+        gap: 12px;
+    }
+
+    .document-meta {
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .theme-toggle {
+        gap: 3px;
+        padding: 4px;
+    }
+
+    .text-size-controls {
+        padding-left: 7px;
+    }
+
+    .text-size-controls span {
+        display: none;
+    }
+
+    .editing-view {
+        grid-template-columns: minmax(0, 1fr);
+        height: auto;
+        overflow: visible;
+    }
+
+    .manuscript-panel {
+        height: 58vh;
+    }
+
+    .proof-panel {
+        min-height: 75vh;
+    }
+
+    .gauge-rail {
+        width: auto;
+        height: 30px;
+        border-top: 1px solid var(--brass);
+        border-bottom: 1px solid var(--brass);
+        cursor: default;
+    }
+
+    .gauge-rail::before {
+        width: 100%;
+        height: 8px;
+        border-top: 1px solid var(--brass);
+        border-bottom: 1px solid var(--brass);
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .gauge-stats {
+        transform: translateX(-50%);
+        bottom: auto;
+    }
+}

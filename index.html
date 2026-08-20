@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Folio</title>
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/styles/reading.css" />
+    <link rel="stylesheet" href="/styles/editing.css" />
+</head>
+
+<body>
+    <header class="topbar">
+        <button class="wordmark" id="home-button" title="Return to reading view">Folio</button>
+        <div class="document-meta">
+            <span class="unsaved-dot" id="unsaved-dot" hidden></span>
+            <span id="filename">Untitled manuscript</span>
+        </div>
+        <nav class="top-actions" aria-label="Document actions">
+            <button class="top-action" id="menu-button" title="Open file menu">Menu</button>
+            <button class="top-action edit-toggle" id="edit-toggle" title="Switch to Manuscript view">Edit</button>
+            <div class="text-size-controls" aria-label="Text size">
+                <button id="text-smaller" title="Decrease text size">A-</button>
+                <span id="text-size-label">100%</span>
+                <button id="text-larger" title="Increase text size">A+</button>
+            </div>
+            <button class="theme-toggle" id="theme-toggle"
+                title="Switch between Day and Night proof"><span>Day</span><span
+                    class="toggle-track"><span></span></span><span>Night</span></button>
+        </nav>
+    </header>
+
+    <main id="reading-view" class="reading-view">
+        <article id="reading-content" class="reading-content" aria-live="polite"></article>
+        <div class="empty-state" id="reading-empty">
+            <p class="kicker">A quiet place for words</p>
+            <h1>Open a manuscript<br />to begin the proof.</h1>
+            <button class="primary-action" id="empty-open">Open Markdown</button>
+        </div>
+    </main>
+
+    <main id="editing-view" class="editing-view" hidden>
+        <section class="manuscript-panel" aria-label="Manuscript editor">
+            <div class="panel-heading"><span>Manuscript</span><span class="panel-note">raw draft</span></div>
+            <div class="toolbar" id="toolbar" aria-label="Formatting tools">
+                <button data-format="bold" title="Bold">B</button><button data-format="heading"
+                    title="Heading">H</button><button data-format="list" title="List">List</button><button
+                    data-format="quote" title="Quote">“</button><button data-format="link"
+                    title="Link">Link</button><button data-format="code" title="Code">Code</button>
+            </div>
+            <div id="editor" class="editor-host"></div>
+        </section>
+        <div class="gauge-rail" id="gauge-rail" role="separator" aria-label="Resize manuscript and proof panes"
+            tabindex="0">
+            <div class="gauge-ticks" id="gauge-ticks"></div>
+            <div class="gauge-stats"><span id="word-count">0 words</span><span id="char-count">0 chars</span><span
+                    id="read-time">1 min read</span></div>
+        </div>
+        <section class="proof-panel" aria-label="Rendered proof">
+            <div class="panel-heading"><span>Proof</span><span class="panel-note">live rendering</span></div>
+            <article id="proof-content" class="proof-content reading-content"></article>
+        </section>
+    </main>
+
+    <div class="selection-popover" id="selection-popover" hidden>
+        <div class="selection-group"><span>Text</span><button data-popup-format="bold">Bold</button><button
+                data-popup-format="italic">Italic</button><button data-popup-format="code">Code</button></div>
+        <div class="selection-group"><span>Structure</span><button data-popup-format="heading">Heading</button><button
+                data-popup-format="list">List</button><button data-popup-format="quote">Quote</button></div>
+        <div class="selection-group"><span>Links</span><button data-popup-format="link">Link</button></div>
+        <div class="selection-group"><span>Clean</span><button data-popup-format="clean">Clean selection</button></div>
+    </div>
+
+    <div class="menu-popover" id="menu-popover" hidden>
+        <button id="open-button">Open Markdown<span>Ctrl+O</span></button>
+        <button id="new-button">New manuscript<span>Ctrl+N</span></button>
+        <button id="save-button">Save<span>Ctrl+S</span></button>
+        <div class="menu-divider"></div>
+        <p>Recent files</p>
+        <div id="recent-files"></div>
+    </div>
+    <script type="module" src="/app.js"></script>
+</body>
+
+</html>

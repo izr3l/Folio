@@ -1,0 +1,294 @@
+.topbar {
+    height: 58px;
+    display: flex;
+    align-items: center;
+    padding: 0 30px;
+    border-bottom: 1px solid var(--rule);
+    gap: 22px;
+}
+
+.wordmark {
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-family: var(--display);
+    font-size: 25px;
+    padding: 0;
+}
+
+.document-meta {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: 1;
+    font-size: 12px;
+    letter-spacing: .04em;
+    color: var(--muted);
+    text-transform: uppercase;
+}
+
+.unsaved-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+
+.top-actions {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.top-action {
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: transparent;
+    padding: 7px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.top-action:hover,
+.top-action:focus-visible {
+    border-color: var(--accent);
+}
+
+.theme-toggle {
+    border: 1px solid var(--brass);
+    background: transparent;
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.toggle-track {
+    width: 23px;
+    height: 11px;
+    border: 1px solid var(--brass);
+    padding: 1px;
+    display: inline-flex;
+    justify-content: flex-start;
+}
+
+.toggle-track span {
+    width: 7px;
+    background: var(--brass);
+    display: block;
+}
+
+:root[data-theme="night"] .toggle-track {
+    justify-content: flex-end;
+}
+
+.reading-view {
+    min-height: calc(100vh - 58px);
+    padding: 74px clamp(24px, 4vw, 72px) 110px;
+}
+
+.reading-content {
+    max-width: none;
+    font-family: var(--display);
+    font-size: calc(20px * var(--type-scale));
+    line-height: 1.66;
+    overflow-wrap: break-word;
+}
+
+.reading-content h1,
+.reading-content h2,
+.reading-content h3 {
+    color: var(--accent);
+    line-height: 1.08;
+    font-weight: 400;
+}
+
+.reading-content h1 {
+    font-size: calc(clamp(40px, 6vw, 64px) * var(--type-scale));
+    margin: 0 0 28px;
+}
+
+.reading-content h2 {
+    font-size: calc(36px * var(--type-scale));
+    margin: 48px 0 16px;
+}
+
+.reading-content h3 {
+    font-size: calc(27px * var(--type-scale));
+    margin: 34px 0 12px;
+}
+
+.reading-content p {
+    margin: 0 0 22px;
+}
+
+.reading-content a {
+    color: var(--accent);
+}
+
+.reading-content blockquote {
+    margin: 28px 0;
+    padding: 5px 24px;
+    border-left: 2px solid var(--brass);
+    color: var(--muted);
+}
+
+.reading-content code {
+    font-family: var(--mono);
+    font-size: .78em;
+}
+
+.reading-content pre {
+    padding: 18px;
+    overflow: auto;
+    background: var(--panel);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.reading-content img {
+    max-width: 100%;
+}
+
+/* Wide tables scroll inside themselves instead of widening the page.
+   display:block + max-content + overflow-x is what keeps a 10-column
+   table from dragging the whole reading column off to the right. */
+.reading-content table {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin: 0 0 22px;
+    font-family: var(--ui);
+    font-size: .68em;
+    line-height: 1.5;
+}
+
+.reading-content th,
+.reading-content td {
+    border: 1px solid var(--rule);
+    padding: 8px 12px;
+    text-align: left;
+    vertical-align: top;
+    min-width: 120px;
+    max-width: 320px;
+}
+
+.reading-content th {
+    color: var(--accent);
+    font-weight: 500;
+    white-space: nowrap;
+    background: var(--panel);
+}
+
+.reading-content ul,
+.reading-content ol {
+    padding-left: 28px;
+}
+
+.empty-state {
+    max-width: 680px;
+    margin: 17vh auto 0;
+    text-align: center;
+}
+
+.empty-state .kicker {
+    color: var(--brass);
+    font: 11px var(--ui);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+}
+
+.empty-state h1 {
+    font: 400 48px/1.05 var(--display);
+    margin: 15px 0 30px;
+}
+
+.primary-action {
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: #fff;
+    padding: 11px 17px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.menu-popover {
+    position: fixed;
+    top: 49px;
+    right: 24px;
+    width: 275px;
+    padding: 8px;
+    background: var(--paper);
+    border: 1px solid var(--brass);
+    box-shadow: 5px 5px 0 var(--shadow);
+    z-index: 5;
+}
+
+.menu-popover button {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    border: 0;
+    background: transparent;
+    padding: 10px;
+    text-align: left;
+    font-size: 13px;
+}
+
+.menu-popover button:hover {
+    background: var(--panel);
+    color: var(--accent);
+}
+
+.menu-popover button span {
+    color: var(--muted);
+    font: 11px var(--mono);
+}
+
+.menu-popover p {
+    margin: 9px 10px 4px;
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}
+
+.menu-divider {
+    border-top: 1px solid var(--rule);
+    margin: 4px 0;
+}
+
+.text-size-controls {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-left: 1px solid var(--rule);
+    padding-left: 15px;
+}
+
+.text-size-controls button {
+    border: 0;
+    background: transparent;
+    padding: 5px 2px;
+    color: var(--accent);
+    font-size: 12px;
+}
+
+.text-size-controls button:hover {
+    text-decoration: underline;
+}
+
+.text-size-controls span {
+    min-width: 37px;
+    color: var(--muted);
+    text-align: center;
+    font: 10px var(--mono);
+}
