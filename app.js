@@ -114,7 +114,7 @@ async function boot() {
     state.editor = createEditor($('#editor'), '', (source) => { state.source = source; setDirty(true); renderMarkdown(source, $('#proof-content')); updateGauge(source); }, showSelectionPopover);
     enableScrollSync();
     enableGaugeResize(); wire(); renderRecent();
-    const path = await invoke('launch_path');
+    const path = await invoke('launch_path').catch(() => null);
     if (path) await loadFile(path);
     else { $('#reading-empty').hidden = false; $('#reading-content').hidden = true; showMode('reading'); }
 }

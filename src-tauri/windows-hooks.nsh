@@ -8,6 +8,7 @@
 
 !macro NSIS_HOOK_POSTINSTALL
   ; --- First-class "Open with" application: friendly name + icon + command ---
+  WriteRegStr HKCU "Software\Classes\Applications\folio.exe" "" "Folio"
   WriteRegStr HKCU "Software\Classes\Applications\folio.exe" "FriendlyAppName" "Folio"
   WriteRegStr HKCU "Software\Classes\Applications\folio.exe\DefaultIcon" "" "$INSTDIR\folio.exe,0"
   WriteRegStr HKCU "Software\Classes\Applications\folio.exe\shell\open\command" "" '"$INSTDIR\folio.exe" "%1"'
@@ -19,6 +20,7 @@
   WriteRegStr HKCU "Software\Classes\.markdown\OpenWithProgids" "Folio.Markdown" ""
 
   ; --- Capabilities so Folio appears in Settings > Default apps ---
+  WriteRegStr HKCU "Software\Classes\Folio.Markdown" "" "Folio.Markdown"
   WriteRegStr HKCU "Software\Folio\Capabilities" "ApplicationName" "Folio"
   WriteRegStr HKCU "Software\Folio\Capabilities" "ApplicationDescription" "A native Markdown reader and editor"
   WriteRegStr HKCU "Software\Folio\Capabilities\FileAssociations" ".md" "Folio.Markdown"
