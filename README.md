@@ -38,6 +38,20 @@ For a frontend-only production build:
 npm run build
 ```
 
+Run the source-mapping tests with `npm test`. The browser regression test checks
+caret stability during live rendering, scroll alignment in both directions,
+text size, wrapping, pane resizing, and short documents:
+
+```powershell
+# Use the installed Microsoft Edge browser on Windows.
+$env:FOLIO_BROWSER_CHANNEL = 'msedge'
+npm run test:browser
+```
+
+With no browser channel set, the test uses Playwright's Chromium (install it
+with `npx playwright install chromium`). The test starts and stops its own local
+Vite server; the Tauri backend is not required.
+
 ## Build the Windows installer
 
 ```powershell
