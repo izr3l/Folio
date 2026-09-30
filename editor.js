@@ -18,7 +18,7 @@ function toggleWrap() {
     return true;
 }
 
-export function createEditor(parent, source, onChange, onSelection) {
+export function createEditor(parent, source, onChange, onSelection, onUpdate = () => {}) {
     changeHandler = onChange;
     selectionHandler = onSelection;
     view = new EditorView({
@@ -31,6 +31,7 @@ export function createEditor(parent, source, onChange, onSelection) {
                     if (!selection.empty) selectionHandler(view.coordsAtPos(selection.to));
                     else selectionHandler(null);
                 }
+                onUpdate(update);
             })]
         }),
         parent

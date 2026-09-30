@@ -3,8 +3,9 @@ import { open, save } from '@tauri-apps/plugin-dialog';
 import { createEditor, getEditorContent, formatSelection, setEditorContent } from './editor.js';
 import { renderMarkdown } from './reader.js';
 import { enableGaugeResize, updateGauge } from './gauge.js';
+import { enableScrollSync } from './scroll-sync.js';
 
-const state = { path: null, source: '', mode: 'reading', dirty: false, editor: null };
+const state = { path: null, source: '', mode: 'reading', dirty: false, editor: null, scrollSync: null };
 const $ = (selector) => document.querySelector(selector);
 const typeScales = [0.85, 1, 1.15, 1.3, 1.5];
 let typeScaleIndex = Number(localStorage.getItem('folio-type-scale-index') || 1);
@@ -14,7 +15,7 @@ function filename(path) { return path ? path.split(/[\\/]/).pop() : 'Untitled ma
 function recentFiles() { return JSON.parse(localStorage.getItem('folio-recent') || '[]'); }
 function remember(path) { if (!path) return; localStorage.setItem('folio-recent', JSON.stringify([path, ...recentFiles().filter((item) => item !== path)].slice(0, 10))); }
 function updateTitle() { $('#filename').textContent = filename(state.path); document.title = `${state.dirty ? '• ' : ''}${filename(state.path)} — Folio`; }
-function updateTypeScale() { const scale = typeScales[typeScaleIndex]; document.documentElement.style.setProperty('--type-scale', scale); $('#text-size-label').textContent = `${Math.round(scale * 100)}%`; localStorage.setItem('folio-type-scale-index', typeScaleIndex); }
+function updateTypeScale() { const scale = typeScales[typeScaleIndex]; document.documentElement.style.setProperty('--type-scale', scale); $('#text-size-label').textContent = `${Math.round(scale * 100)}%`; localStorage.setItem('folio-type-scale-index', typeScaleIndex); state.scrollSync?.refresh(); }
 function adjustTypeScale(direction) { typeScaleIndex = Math.min(typeScales.length - 1, Math.max(0, typeScaleIndex + direction)); updateTypeScale(); }
 function showSelectionPopover(coords) {
     const popup = $('#selection-popover');
@@ -32,7 +33,7 @@ function showMode(mode) {
     $('#edit-toggle').textContent = mode === 'reading' ? 'Edit' : 'Proof';
     $('#edit-toggle').title = mode === 'reading' ? 'Switch to Manuscript view' : 'Switch to Folio reading view';
     if (mode === 'reading') renderMarkdown(state.source, $('#reading-content'));
-    else { renderMarkdown(state.source, $('#proof-content')); updateGauge(state.source); state.editor?.focus(); }
+    else { renderMarkdown(state.source, $('#proof-content')); updateGauge(state.source); state.editor?.focus(); state.scrollSync?.refresh(true); }
 }
 
 async function loadFile(path, mode = 'reading') {
@@ -64,22 +65,6 @@ async function saveFile() {
 
 function newFile() { state.path = null; state.source = ''; updateTitle(); $('#reading-empty').hidden = true; if (state.editor) setEditorContent(''); setDirty(false); showMode('editing'); }
 function renderRecent() { const container = $('#recent-files'); container.innerHTML = ''; recentFiles().forEach((path) => { const button = document.createElement('button'); button.textContent = filename(path); button.title = path; button.addEventListener('click', () => loadFile(path)); container.append(button); }); if (!container.children.length) container.innerHTML = '<small style="display:block;padding:8px;color:var(--muted)">No recent files</small>'; }
-function enableScrollSync() {
-    const manuscript = state.editor.dom.querySelector('.cm-scroller');
-    const proof = $('#proof-content');
-    let syncing = false;
-    const sync = (source, target) => {
-        if (syncing) return;
-        syncing = true;
-        const sourceRange = source.scrollHeight - source.clientHeight;
-        const targetRange = target.scrollHeight - target.clientHeight;
-        target.scrollTop = sourceRange > 0 && targetRange > 0 ? (source.scrollTop / sourceRange) * targetRange : 0;
-        requestAnimationFrame(() => { syncing = false; });
-    };
-    manuscript.addEventListener('scroll', () => sync(manuscript, proof));
-    proof.addEventListener('scroll', () => sync(proof, manuscript));
-}
-
 function wire() {
     $('#edit-toggle').addEventListener('click', () => showMode(state.mode === 'reading' ? 'editing' : 'reading'));
     $('#home-button').addEventListener('click', () => showMode('reading'));
@@ -111,8 +96,10 @@ function wire() {
 async function boot() {
     document.documentElement.dataset.theme = localStorage.getItem('folio-theme') || 'day';
     updateTypeScale();
-    state.editor = createEditor($('#editor'), '', (source) => { state.source = source; setDirty(true); renderMarkdown(source, $('#proof-content')); updateGauge(source); }, showSelectionPopover);
-    enableScrollSync();
+    state.editor = createEditor($('#editor'), '', (source) => { state.source = source; setDirty(true); renderMarkdown(source, $('#proof-content')); updateGauge(source); }, showSelectionPopover, (update) => {
+        if (update.docChanged || update.geometryChanged) state.scrollSync?.refresh(update.docChanged);
+    });
+    state.scrollSync = enableScrollSync(state.editor, $('#proof-content'));
     enableGaugeResize(); wire(); renderRecent();
     const path = await invoke('launch_path').catch(() => null);
     if (path) await loadFile(path);
