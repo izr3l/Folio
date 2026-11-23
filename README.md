@@ -1,6 +1,6 @@
 # Folio
 
-Folio is a lightweight, native Markdown reader and editor for Windows. It opens documents in a quiet, typeset reading view and keeps editing available when you need it.
+Folio is a lightweight, native Markdown reader and editor for Windows and Linux. It opens documents in a quiet, typeset reading view and keeps editing available when you need it.
 
 ## Features
 
@@ -13,7 +13,7 @@ Folio is a lightweight, native Markdown reader and editor for Windows. It opens 
 - Drag and drop Markdown files into the window
 - Recent files menu
 - Day/Night themes and adjustable reading size
-- Windows file association for `.md` and `.markdown` files
+- Desktop file associations for `.md` and `.markdown` files
 
 ## Tech stack
 
@@ -25,16 +25,28 @@ Folio is a lightweight, native Markdown reader and editor for Windows. It opens 
 
 ## Development
 
-Install Node.js, Rust, the Tauri Windows prerequisites, and WebView2. Then run:
+Install Node.js, a current stable Rust toolchain, and the
+[Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for your platform.
+Windows requires WebView2; Linux uses WebKitGTK 4.1.
 
-```powershell
-npm install
-npm run tauri dev
+On Fedora, install the native build dependencies (including Rust and Cargo):
+
+```bash
+sudo dnf install rust cargo gcc gcc-c++ make pkgconf-pkg-config \
+  webkit2gtk4.1-devel openssl-devel curl wget file \
+  libappindicator-gtk3-devel librsvg2-devel libxdo-devel
+```
+
+Then, on either platform:
+
+```sh
+npm ci
+npm run tauri -- dev
 ```
 
 For a frontend-only production build:
 
-```powershell
+```sh
 npm run build
 ```
 
@@ -59,6 +71,36 @@ npm run package:windows
 ```
 
 The NSIS installer is written to `src-tauri/target/release/bundle/nsis/`. It installs Folio for the current Windows user, registers the Markdown file associations, and allows Markdown files to be opened directly in Folio.
+
+## Build the Linux package
+
+Build on Linux with the prerequisites above installed:
+
+```bash
+npm run package:linux
+```
+
+The Fedora RPM is written to `src-tauri/target/release/bundle/rpm/`. Install the
+generated package with `sudo dnf install ./path/to/Folio.rpm`, using its actual
+filename. It includes an application-menu launcher and advertises support for
+Markdown files in the file manager's **Open With** menu. You can select Folio as
+the default Markdown application in your desktop's file properties.
+
+Tauri automatically merges `src-tauri/tauri.linux.conf.json` on Linux, so the
+default build produces an RPM while Windows keeps its NSIS installer. For other
+Linux formats, override the bundle target, for example:
+
+```bash
+npm run tauri -- build --bundles deb
+npm run tauri -- build --bundles appimage
+```
+
+The Linux desktop-entry template forwards the selected file to Folio, including
+paths containing spaces, so **Open With** opens the document directly.
+
+For packages intended for older distributions, build on the oldest supported
+distribution with WebKitGTK 4.1. A build made on a recent Fedora release may
+depend on system libraries newer than those available on older Linux systems.
 
 ## Project structure
 
