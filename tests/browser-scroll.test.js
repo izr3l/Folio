@@ -143,3 +143,64 @@ test('editing stays in view and both panes follow matching source blocks', { tim
         await server.close();
     }
 });
+
+test('native file drops open Markdown paths through Tauri events', { timeout: 30000 }, async () => {
+    const server = await createServer({ server: { host: '127.0.0.1', port: 1421, strictPort: false } });
+    let browser;
+    try {
+        await server.listen();
+        browser = await chromium.launch({ channel: process.env.FOLIO_BROWSER_CHANNEL || undefined });
+        const page = await browser.newPage();
+        const errors = [];
+        page.on('pageerror', (error) => errors.push(error.message));
+        const url = `http://127.0.0.1:${server.httpServer.address().port}/`;
+        await page.route(url, async (route) => {
+            const response = await route.fetch();
+            const html = await response.text();
+            await route.fulfill({ response, body: html.replace('<script type="module" src="/app.js"></script>', `<script type="module">
+                import { mockIPC, mockWindows } from '/node_modules/@tauri-apps/api/mocks.js';
+                globalThis.isTauri = true;
+                window.readPaths = [];
+                mockWindows('main');
+                mockIPC((command, args) => {
+                    if (command === 'launch_path') return null;
+                    if (command === 'read_file') {
+                        window.readPaths.push(args.path);
+                        return '# Dropped document ' + window.readPaths.length;
+                    }
+                    throw new Error('Unexpected Tauri command: ' + command);
+                }, { shouldMockEvents: true });
+                await import('/app.js');
+            </script>`) });
+        });
+        await page.goto(url);
+        await page.locator('#reading-empty').waitFor({ state: 'visible' });
+
+        async function emitDropEvent(event, paths = []) {
+            await page.evaluate(async ({ event, paths }) => {
+                const { emit } = await import('/node_modules/@tauri-apps/api/event.js');
+                await emit(event, { paths, position: { x: 10, y: 10 } });
+            }, { event, paths });
+        }
+
+        await emitDropEvent('tauri://drag-enter', ['/home/test/hover.md']);
+        await emitDropEvent('tauri://drag-over');
+        await emitDropEvent('tauri://drag-leave');
+        await emitDropEvent('tauri://drag-drop', ['/home/test/notes.md.bak', '/home/test/image.png']);
+        assert.deepEqual(await page.evaluate(() => window.readPaths), []);
+
+        const paths = ['/home/test/Notes.MD', '/home/test/My document.MARKDOWN'];
+        for (const [index, path] of paths.entries()) {
+            await emitDropEvent('tauri://drag-drop', ['/home/test/image.png', path]);
+            await page.locator('#reading-content h1').filter({ hasText: `Dropped document ${index + 1}` }).waitFor();
+            assert.equal(await page.locator('#filename').textContent(), path.split('/').at(-1));
+        }
+        assert.deepEqual(await page.evaluate(() => window.readPaths), paths);
+        await page.locator('#edit-toggle').click();
+        assert.match(await page.locator('.cm-content').textContent(), /Dropped document 2/);
+        assert.deepEqual(errors, []);
+    } finally {
+        await browser?.close();
+        await server.close();
+    }
+});

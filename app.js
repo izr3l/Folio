@@ -1,4 +1,5 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, isTauri } from '@tauri-apps/api/core';
+import { getCurrentWebview } from '@tauri-apps/api/webview';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { createEditor, getEditorContent, formatSelection, setEditorContent } from './editor.js';
 import { renderMarkdown } from './reader.js';
@@ -90,7 +91,14 @@ function wire() {
     });
     window.addEventListener('click', (event) => { if (!event.target.closest('.menu-popover, #menu-button')) $('#menu-popover').hidden = true; });
     window.addEventListener('dragover', (event) => event.preventDefault());
-    window.addEventListener('drop', async (event) => { event.preventDefault(); const file = [...event.dataTransfer.files].find((item) => /\.md$/i.test(item.name)); if (file?.path) await loadFile(file.path); });
+    window.addEventListener('drop', (event) => event.preventDefault());
+    if (isTauri()) {
+        getCurrentWebview().onDragDropEvent(async ({ payload }) => {
+            if (payload.type !== 'drop') return;
+            const path = payload.paths.find((path) => /\.(md|markdown)$/i.test(path));
+            if (path) await loadFile(path);
+        }).catch((error) => console.error('Could not enable file drops:', error));
+    }
 }
 
 async function boot() {

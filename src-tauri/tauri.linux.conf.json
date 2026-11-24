@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.tauri.app/config/2",
+    "bundle": {
+        "targets": [
+            "rpm"
+        ],
+        "icon": [
+            "icons/linux/icon.png",
+            "icons/linux/32x32.png",
+            "icons/linux/64x64.png",
+            "icons/linux/128x128.png",
+            "icons/linux/128x128@2x.png"
+        ],
+        "linux": {
+            "rpm": {
+                "release": "2",
+                "desktopTemplate": "linux.desktop.hbs"
+            },
+            "deb": {
+                "desktopTemplate": "linux.desktop.hbs"
+            }
+        }
+    }
+}
